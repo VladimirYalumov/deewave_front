@@ -1,7 +1,8 @@
 import React, {useState} from "react";
 import PropTypes from 'prop-types'
 import DownloadPhoto from "./DownloadPhoto";
-import defaultImage from './defaultImage.png';
+
+import DefaultImage from "./DefaultImage";
 
 const featuresMaxLimit = 4;
 
@@ -22,7 +23,7 @@ function renderUserName(edit, name, setNameValue) {
 function renderUserFeature(edit, features, setFeaturesValue) {
     if (edit) {
         return <div>
-            <label htmlFor="inputPassword6" className="col-form-label">Features</label>
+            <label htmlFor="inputPassword6" className="col-form-label text-dark">Features</label>
             {Array.from(Array(featuresMaxLimit).keys()).map(function (n, index) {
                 return <input type="text" className="form-control list-group-item mb-3" key={"input_feature_" + index}
                               defaultValue={features[index] !== void 0 ? features[index] : ""}
@@ -55,12 +56,9 @@ function UserProfile({user, setUser}) {
     const [edit, setEdit] = useState(false);
     const [nameValue, setNameValue] = useState(user.name);
     const [featuresValue, setFeaturesValue] = useState(user.features);
-    const [photoValue, setPhotoValue] = useState(user.photo !== "" ? user.photo : defaultImage);
+    const [photoValue, setPhotoValue] = useState(user.photo === "" ? user.photo : DefaultImage);
 
     const activateEditMode = () => {
-        const reader = new FileReader();
-        reader.readAsDataURL(defaultImage)
-        console.log(reader);
         setEdit(true);
     };
     const deActivateEditMode = () => {
@@ -70,19 +68,19 @@ function UserProfile({user, setUser}) {
         <div className="container-fluid p-3 bg-light border">
             <div className="row m-0">
                 <div className="col-md-3 p-3">
-                    <img
-                        style={{"height":"auto"}}
-                        className="img-thumbnail rounded"
-                        src={"data:image/png;base64," + photoValue}
-                        alt="Logo"
-                    />
+                        <img
+                            style={{"height":"auto"}}
+                            className="img-thumbnail rounded"
+                            src={"data:image/png;base64," + photoValue}
+                            alt="Logo"
+                        />
                     { edit ? <DownloadPhoto setPhotoValue={setPhotoValue} /> : "" }
                 </div>
                 <div className="col-md-5 p-3 d-flex flex-column">
                     <div className="mb-3 mb-md-0 p-0">
                         { renderUserName(edit, nameValue, setNameValue) }
                     </div>
-                    <div className="pt-3">
+                    <div className="">
                         <ul className="list-group">
                             { renderUserFeature(edit, featuresValue, setFeaturesValue) }
                         </ul>

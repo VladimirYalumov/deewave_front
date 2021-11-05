@@ -8,6 +8,7 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "axios": "^0.23.0",
+    "base64-loader": "^1.0.0",
     "bootstrap": "^5.1.1",
     "popper.js": "^1.16.1",
     "prop-types": "^15.7.2",
