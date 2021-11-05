@@ -4,14 +4,13 @@ import VerifyUserForm from "./VerifyUserForm";
 
 const passwordLength = {min: 8, max: 16};
 
-function SignUpForm() {
+function SignUpForm({setAuth}) {
     const [email, setEmail] = useState({ value: "", valid: true, msgError: ""});
     const [password, setPassword] = useState({ value: "", valid: true, msgError: ""});
     const [passwordConfirm, setPasswordConfirm] = useState({ value: "", valid: true, msgError: ""});
 
     const [errorResponse, setErrorResponse] = useState("")
     const [successResponse, setSuccessResponse] = useState("")
-
     const [showSignUpForm, setShowSignUpForm] = useState(true)
 
     function validateFields() {
@@ -58,14 +57,15 @@ function SignUpForm() {
     }
 
     function renderSignUpResult(msg) {
-        if (errorResponse != "")  {
+        if (errorResponse !== "")  {
             return <div className="alert alert-danger alert-dismissible fade show" role="alert">
                 <strong>Signup failed!</strong> {msg}
                 <button className="btn-close" onClick={() => setErrorResponse("")}></button>
             </div>
-        }
-        else {
-            return ""
+        } else if (successResponse !== "") {
+            return <div className="alert alert-info alert-dismissible fade show" role="alert">{successResponse}<button className="btn-close" onClick={() => setErrorResponse("")}></button></div>
+        } else {
+            return "";
         }
     }
 
@@ -97,21 +97,20 @@ function SignUpForm() {
                     { !passwordConfirm.valid ? <div className="invalid-feedback">{passwordConfirm.msgError}</div> : ""  }
                 </div>
             </div>
-            <button className="btn btn-dark btn-lg" onClick={submitSignUpRequest}>Sign up</button>
+            <button className="btn btn-dark btn-lg col-12" onClick={submitSignUpRequest}>Sign up</button>
         </div>
     );
     } else {
         return (
             <div className="col-md-6 card-body">
                 {renderSignUpResult(errorResponse)}
-                <VerifyUserForm email={email.value} setErrorResponse={setErrorResponse} />
+                <VerifyUserForm email={email.value} setErrorResponse={setErrorResponse} sendMessage={false} verifyType={"activation"} showForm={setShowSignUpForm} setSuccessResponse={setSuccessResponse} />
             </div>
         );
     }
 
     function submitSignUpRequest() {
         setErrorResponse("");
-        setSuccessResponse("");
         if (!validateFields()) {
             return;
         }
@@ -119,7 +118,7 @@ function SignUpForm() {
         let body = {
             'name': "User",
             'email': email.value,
-            'password': password.value
+            'password': password.value,
         };
 
         fetch('http://127.0.0.1:8080/signup', {
@@ -127,6 +126,7 @@ function SignUpForm() {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
+                'Client': "deewave",
             },
             body: JSON.stringify(body)
         })

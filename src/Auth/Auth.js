@@ -1,25 +1,28 @@
 import React, {useState} from "react";
 import SignUpForm from "./SignUpForm";
+import SignInForm from "./SignInForm";
 
-function Auth() {
-    const [authType, setAuthType] = useState(1);
+const verifyAuth = "activation"
+
+function Auth({setAuth}) {
+    const [authType, setAuthType] = useState(true);
 
     return (
         <div className="card text-dark">
             <div className="card-header">
                 <ul className="nav nav-tabs card-header-tabs">
                     <li className="nav-item">
-                        <a className="nav-link link-dark active" aria-current="true" href="#">Sign up</a>
+                        <button className={"nav-link link-dark " + (authType ? "active" : "")} aria-current="true" href="" onClick={() => setAuthType(true)}>Sign up</button>
                     </li>
                     <li className="nav-item">
-                        <a className="nav-link link-dark" aria-current="true" href="#">Sign in</a>
+                        <button className={"nav-link link-dark " + (!authType ? "active" : "")} aria-current="true" href="" onClick={() => setAuthType(false)}>Sign in</button>
                     </li>
                 </ul>
             </div>
             <div className="row p-3">
-                {authType === 1 ? <SignUpForm /> : ""}
+                {authType ? <SignUpForm setAuth={setAuth}/> : <SignInForm setAuth={setAuth}/>}
                 <div className="col-md-6 p-3">
-                    <h3 className="card-title mb-3">DeeWave? What is it, fucking niga?</h3>
+                    <h3 className="card-title mb-3">DeeWave? What is it?</h3>
                     <p>DeeWave - this is a service where you can record past or upcoming events from your fascinating life.</p>
                     <p>With DeeWave you can:</p>
                     <ul>

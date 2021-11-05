@@ -1,11 +1,45 @@
-import React, {useState} from "react";
-import Validation from '../Validation';
+import React, {useState, useEffect} from "react";
 
-const passwordLength = {min: 8, max: 16};
+function renderDescription(type, email) {
+    if (type === "activation") return <p>Your account has been successfully created, but it is not active. A confirmation code was sent to mail <strong>{email}</strong>.</p>;
+    if (type === "password") return <p>To change password you must confirm you email <strong>{email}</strong>.</p>
+}
 
-function VerifyUserForm({email, setErrorResponse}) {
+function VerifyUserForm({email, setErrorResponse, sendMessage, verifyType, showForm, setSuccessResponse}) {
     const [showToast, setShowToast] = useState(false);
     const [code, setCode] = useState("");
+    const submitSendVerifyCodeRequest = () => {
+        setErrorResponse("");
+        let body = {
+            'email': email,
+        };
+
+        return fetch('http://127.0.0.1:8080/send_verify_code', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Client': "deewave",
+            },
+            body: JSON.stringify(body)
+        })
+            .then(async response => {
+                const isJson = response.headers.get('content-type').includes('application/json');
+                const data = isJson && await response.json();
+                if (!response.ok) {
+                    if (data.code == null || data.message == null) {
+                        setErrorResponse("Invalid request");
+                    }
+                    setErrorResponse(data.message);
+                } else {
+                    setShowToast(true);
+                    setTimeout(closeToast, 5000);
+                }
+            })
+            .catch(function (response) {
+                setErrorResponse("Internal error");
+            });
+    }
 
     function setCodeValue(code) {
         if (code.length > 4) {
@@ -17,15 +51,21 @@ function VerifyUserForm({email, setErrorResponse}) {
         setShowToast(false);
     }
 
+    useEffect(() => {
+        if (sendMessage && verifyType !== "password") {
+          submitSendVerifyCodeRequest();
+        }
+    }, [])
+
     return (
         <div className="card-body">
-            <p>Your account has been successfully created. A confirmation code was sent to mail <strong>{email}</strong>.</p>
+            {renderDescription(verifyType, email)}
             <div className="raw pe-md-5 me-md-5">
                 <div className="input-group col-md-8 mb-3">
                     <input type="number" className="form-control" placeholder="Verification Code" value={code} onChange={event => setCodeValue(event.target.value)} />
                     <button className="btn btn-success" type="button" id="button-addon1" onClick={submitVerifyUserRequest}>Activate</button>
                 </div>
-                <button className="btn btn-sm btn-dark" type="button" onClick={submitSendVerifyCodeRequest}>Send Code Again</button>
+                {verifyType !== "password" ? <button className="btn btn-sm btn-dark" type="button" onClick={submitSendVerifyCodeRequest}>Send Code Again</button> : "" }
             </div>
             <div className="position-fixed bottom-0 end-0 p-3">
                 <div className={"toast fade " + (showToast ? "show" : "hide")} >
@@ -47,7 +87,7 @@ function VerifyUserForm({email, setErrorResponse}) {
         let body = {
             'code': code,
             'email': email,
-            'client': "deewave"
+            'type': verifyType
         };
 
         fetch('http://127.0.0.1:8080/verify_user', {
@@ -55,6 +95,7 @@ function VerifyUserForm({email, setErrorResponse}) {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
+                'Client': "deewave",
             },
             body: JSON.stringify(body)
         })
@@ -67,43 +108,17 @@ function VerifyUserForm({email, setErrorResponse}) {
                 }
                 setErrorResponse(data.message);
             } else {
-                alert("ok");
-            }
-        })
-        .catch(function (response) {
-            setErrorResponse("Internal error");
-        });
-    }
-
-    function submitSendVerifyCodeRequest() {
-        setErrorResponse("");
-        let body = {
-            'email': email,
-            'client': 'deewave'
-        };
-
-        fetch('http://127.0.0.1:8080/send_verify_code', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body)
-        })
-        .then(async response => {
-            const isJson = response.headers.get('content-type').includes('application/json');
-            const data = isJson && await response.json();
-            if (!response.ok) {
-                if (data.code == null || data.message == null) {
-                    setErrorResponse("Invalid request");
+                if (verifyType === "activation") {
+                    setSuccessResponse("Email was successfully verified");
                 }
-                setErrorResponse(data.message);
-            } else {
-                setShowToast(true);
-                setTimeout(closeToast, 5000);
+                if (verifyType === "password") {
+                    setSuccessResponse("Password was successfully changed");
+                }
+                showForm(true);
             }
         })
         .catch(function (response) {
+            console.log(response)
             setErrorResponse("Internal error");
         });
     }
