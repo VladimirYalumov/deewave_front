@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import Validation from '../Validation';
 import VerifyUserForm from "./VerifyUserForm";
 import Cookies from 'universal-cookie';
+import Host from './../Globals/Host';
 
 const passwordLength = {min: 8, max: 16};
 
@@ -129,7 +130,7 @@ function SignInForm({setAuth}) {
             'password': password.value,
         };
 
-        fetch('http://127.0.0.1:8080/signin', {
+        fetch(Host + '/signin', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -174,7 +175,7 @@ function SignInForm({setAuth}) {
             'password': password.value,
         };
 
-        fetch('http://127.0.0.1:8080/change_password', {
+        fetch(Host + '/change_password', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

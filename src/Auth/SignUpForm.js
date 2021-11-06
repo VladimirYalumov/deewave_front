@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import Validation from '../Validation';
 import VerifyUserForm from "./VerifyUserForm";
+import Host from './../Globals/Host';
 
 const passwordLength = {min: 8, max: 16};
 
@@ -121,7 +122,7 @@ function SignUpForm({setAuth}) {
             'password': password.value,
         };
 
-        fetch('http://127.0.0.1:8080/signup', {
+        fetch(Host + '/signup', {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',

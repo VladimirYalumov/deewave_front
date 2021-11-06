@@ -1,7 +1,9 @@
 import React, {useEffect, useState} from "react";
-import UserProfile from "../Content/UserProfile";
+import UserProfile from "../MainUserContent/UserProfile";
 import Cookies from "universal-cookie";
 import PropTypes from "prop-types";
+
+import Host from './../Globals/Host';
 
 function MainUser({setAuth}) {
     const [user, setUser] = useState(
@@ -12,12 +14,12 @@ function MainUser({setAuth}) {
         }
     );
     var isGetUser = false;
-
     useEffect(() => {
         const cookies = new Cookies();
-        if (typeof cookies.get('userId') !== 'undefined' || typeof cookies.get('authToken') !== 'undefined') {}
+        if (typeof cookies.get('userId') !== 'undefined' || typeof cookies.get('authToken') !== 'undefined') {
+        }
 
-        fetch('http://127.0.0.1:8080/user/' + cookies.get('userId'), {
+        fetch(Host + '/user/' + cookies.get('userId'), {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -40,7 +42,7 @@ function MainUser({setAuth}) {
                 setUser({
                     name: data.name,
                     features: data.features,
-                    photo: data.photo
+                    photo: data.image
                 });
                 setAuth(true);
                 isGetUser = true;
@@ -50,7 +52,7 @@ function MainUser({setAuth}) {
             isGetUser = true;
             setAuth(false)
         });
-    }, [user])
+    }, [])
 
     if (user.name !== "") {
         return (

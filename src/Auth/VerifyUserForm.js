@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from "react";
+import Host from './../Globals/Host';
 
 function renderDescription(type, email) {
     if (type === "activation") return <p>Your account has been successfully created, but it is not active. A confirmation code was sent to mail <strong>{email}</strong>.</p>;
@@ -14,7 +15,7 @@ function VerifyUserForm({email, setErrorResponse, sendMessage, verifyType, showF
             'email': email,
         };
 
-        return fetch('http://127.0.0.1:8080/send_verify_code', {
+        return fetch(Host + '/send_verify_code', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -90,7 +91,7 @@ function VerifyUserForm({email, setErrorResponse, sendMessage, verifyType, showF
             'type': verifyType
         };
 
-        fetch('http://127.0.0.1:8080/verify_user', {
+        fetch(Host + '/verify_user', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
