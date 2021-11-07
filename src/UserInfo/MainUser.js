@@ -56,7 +56,7 @@ function MainUser({setAuth}) {
 
     if (user.name !== "") {
         return (
-            <UserProfile user={user} setUser={setUser}/>
+            <UserProfile user={user} setUser={setUser} />
         );
     } else {
         if (isGetUser) {

@@ -41,3 +41,12 @@
   margin-top: 60px;
   margin-bottom: 60px;
 }
+
+.btn-circle {
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 13px !important;
+  text-align: center !important;
+  font-size: 17px !important;
+  padding: 0 !important;
+}

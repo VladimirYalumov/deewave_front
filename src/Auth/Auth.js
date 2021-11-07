@@ -5,7 +5,7 @@ import SignInForm from "./SignInForm";
 const verifyAuth = "activation"
 
 function Auth({setAuth}) {
-    const [authType, setAuthType] = useState(true);
+    const [authType, setAuthType] = useState(false);
 
     return (
         <div className="card text-dark">
@@ -20,7 +20,7 @@ function Auth({setAuth}) {
                 </ul>
             </div>
             <div className="row p-3">
-                {authType ? <SignUpForm setAuth={setAuth}/> : <SignInForm setAuth={setAuth}/>}
+                {authType ? <SignUpForm setAuth={setAuth} setAuthType={setAuthType} /> : <SignInForm setAuth={setAuth} setAuthType={setAuthType} />}
                 <div className="col-md-6 p-3">
                     <h3 className="card-title mb-3">DeeWave? What is it?</h3>
                     <p>DeeWave - this is a service where you can record past or upcoming events from your fascinating life.</p>

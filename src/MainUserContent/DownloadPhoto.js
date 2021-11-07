@@ -42,10 +42,10 @@ function DownloadPhoto({setPhotoValue}){
     };
 
     return (
-        <div className="row">
-            <label htmlFor="downloadPhoto" className="btn btn-dark col-12">Download Photo</label>
+        <div className="row mt-3">
+            <label htmlFor="downloadPhoto" className="btn btn-outline-dark col-12">Download Photo</label>
             <input id="downloadPhoto" type="file" className="visually-hidden" onChange={onChange} />
-            <button type="button" className="btn btn-dark col-12 mt-1" onClick={openModal}>Edit Photo</button>
+            <button type="button" className="btn btn-outline-dark col-12 mt-1" onClick={openModal}>Edit Photo</button>
                 <div className='modal custom-modal' style={show ? {display: 'block'} : {display: 'none'}}>
                     <div className="modal-dialog text-dark">
                         <div className='modal-content'>

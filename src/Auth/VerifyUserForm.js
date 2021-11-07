@@ -6,7 +6,7 @@ function renderDescription(type, email) {
     if (type === "password") return <p>To change password you must confirm you email <strong>{email}</strong>.</p>
 }
 
-function VerifyUserForm({email, setErrorResponse, sendMessage, verifyType, showForm, setSuccessResponse}) {
+function VerifyUserForm({email, setErrorResponse, sendMessage, verifyType, showForm, setSuccessResponse, setAuthType}) {
     const [showToast, setShowToast] = useState(false);
     const [code, setCode] = useState("");
     const submitSendVerifyCodeRequest = () => {
@@ -111,6 +111,8 @@ function VerifyUserForm({email, setErrorResponse, sendMessage, verifyType, showF
             } else {
                 if (verifyType === "activation") {
                     setSuccessResponse("Email was successfully verified");
+                    localStorage.setItem('signInEmail', email);
+                    setAuthType(false);
                 }
                 if (verifyType === "password") {
                     setSuccessResponse("Password was successfully changed");

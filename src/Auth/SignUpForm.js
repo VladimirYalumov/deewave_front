@@ -5,7 +5,7 @@ import Host from './../Globals/Host';
 
 const passwordLength = {min: 8, max: 16};
 
-function SignUpForm({setAuth}) {
+function SignUpForm({setAuth, setAuthType}) {
     const [email, setEmail] = useState({ value: "", valid: true, msgError: ""});
     const [password, setPassword] = useState({ value: "", valid: true, msgError: ""});
     const [passwordConfirm, setPasswordConfirm] = useState({ value: "", valid: true, msgError: ""});
@@ -105,7 +105,7 @@ function SignUpForm({setAuth}) {
         return (
             <div className="col-md-6 card-body">
                 {renderSignUpResult(errorResponse)}
-                <VerifyUserForm email={email.value} setErrorResponse={setErrorResponse} sendMessage={false} verifyType={"activation"} showForm={setShowSignUpForm} setSuccessResponse={setSuccessResponse} />
+                <VerifyUserForm email={email.value} setErrorResponse={setErrorResponse} sendMessage={false} verifyType={"activation"} showForm={setShowSignUpForm} setSuccessResponse={setSuccessResponse} setAuthType={setAuthType} />
             </div>
         );
     }
@@ -140,6 +140,7 @@ function SignUpForm({setAuth}) {
                 }
                 setErrorResponse(data.message);
             } else {
+                localStorage.setItem('signInPassword', password.value);
                 setShowSignUpForm(false);
             }
         })

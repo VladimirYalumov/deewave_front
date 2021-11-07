@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import Validation from '../Validation';
 import VerifyUserForm from "./VerifyUserForm";
 import Cookies from 'universal-cookie';
@@ -6,7 +6,7 @@ import Host from './../Globals/Host';
 
 const passwordLength = {min: 8, max: 16};
 
-function SignInForm({setAuth}) {
+function SignInForm({setAuth, setAuthType}) {
     const [email, setEmail] = useState({ value: "", valid: true, msgError: ""});
     const [password, setPassword] = useState({ value: "", valid: true, msgError: ""});
 
@@ -58,6 +58,14 @@ function SignInForm({setAuth}) {
             return "";
         }
     }
+
+    useEffect(() => {
+        let localStorageEmail = localStorage.getItem('signInEmail')
+        let localStoragePassword = localStorage.getItem('signInPassword')
+        if (localStorageEmail && localStoragePassword) {
+            autoSubmitSignInRequest(localStorageEmail, localStoragePassword)
+        }
+    }, [])
 
     if (showSignInForm) {
         if (showChangePassword) {
@@ -113,7 +121,14 @@ function SignInForm({setAuth}) {
         return (
             <div className="col-md-6 card-body">
                 {renderSignInResult(errorResponse)}
-                <VerifyUserForm email={email.value} setErrorResponse={setErrorResponse} sendMessage={true} verifyType={verifyType} showForm={setShowSignInForm} setSuccessResponse={setSuccessResponse} />
+                <VerifyUserForm
+                    email={email.value}
+                    setErrorResponse={setErrorResponse}
+                    sendMessage={true}
+                    verifyType={verifyType}
+                    showForm={setShowSignInForm}
+                    setSuccessResponse={setSuccessResponse}
+                    setAuthType={setAuthType} />
             </div>
         );
     }
@@ -161,6 +176,50 @@ function SignInForm({setAuth}) {
         .catch(function (response) {
             setErrorResponse("Internal error");
         });
+    }
+
+    function autoSubmitSignInRequest(email, password) {
+        setErrorResponse("");
+        setSuccessResponse("");
+
+        let body = {
+            'email': email,
+            'password': password,
+        };
+
+        fetch(Host + '/signin', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Client': "deewave",
+            },
+            body: JSON.stringify(body)
+        })
+            .then(async response => {
+                const isJson = response.headers.get('content-type').includes('application/json');
+                const data = isJson && await response.json();
+                if (!response.ok) {
+                    if (data.code === null || data.message === null) {
+                        setErrorResponse("Invalid request");
+                    }
+                    if (data.code === 8) {
+                        setShowSignInForm(false);
+                        return;
+                    }
+                    setErrorResponse(data.message);
+                } else {
+                    let cookies = new Cookies();
+                    cookies.set('userId', data.user, { path: '/' });
+                    cookies.set('authToken', data.token, { path: '/' });
+                    localStorage.removeItem('signInEmail');
+                    localStorage.removeItem('signInPassword')
+                    setAuth(true);
+                }
+            })
+            .catch(function (response) {
+                setErrorResponse("Internal error");
+            });
     }
 
     function submitChangePasswordRequest() {

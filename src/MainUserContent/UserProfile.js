@@ -2,16 +2,18 @@ import React, {useState, useEffect} from "react";
 import PropTypes from 'prop-types'
 import DownloadPhoto from "./DownloadPhoto";
 import Cookies from "universal-cookie";
+import ContentPopover from './Popover';
 
 import DefaultImage from "../Globals/DefaultImage";
 import Host from './../Globals/Host';
+import Popover from "react-bootstrap/Popover";
 
 const featuresMaxLimit = 4;
 const featuresLengthLimit = 35;
 
 function renderUserName(edit, name, setNameValue) {
     if (edit) {
-        return <div className="pt-3 row mb-3 text-dark">
+        return <div className="p-3 mb-3 text-dark">
             <div className="col-auto">
                 <label htmlFor="inputPassword6" className="col-form-label">Name</label>
             </div>
@@ -23,19 +25,39 @@ function renderUserName(edit, name, setNameValue) {
     return <h3 className="text-center text-md-start m-0 text-dark">{name}</h3>
 }
 
-function renderUserFeature(edit, features, setFeaturesValue, errorFeaturesIndexes, setErrorFeaturesIndexes) {
+function renderUserFeature(edit, features, setFeaturesValue, errorFeaturesIndexes, setErrorFeaturesIndexes, isPopoverOpen, setIsPopoverOpen) {
     if (edit) {
-        return <div>
-            <div className={"col-form-label "  + (errorFeaturesIndexes.length ? "text-danger" : "text-dark")}>Features</div>
+        const popover = (
+            <Popover id="popover-basic">
+                <Popover.Header as="h3">What is a features?</Popover.Header>
+                <Popover.Body>
+                    <p>Features - it is your hobbies, interests, job and everything, what do you want!</p>
+                    <p className="fw-bold">For example:</p>
+                    <ul>
+                        <li className="fw-bold">Play the guitar</li>
+                        <li className="fw-bold">Work the developer in GOOGLE</li>
+                        <li className="fw-bold">Travel the mountains</li>
+                        <li className="fw-bold">VERY COOL BOY!</li>
+                    </ul>
+                </Popover.Body>
+            </Popover>
+        );
+        return <div className="p-3">
+            <div className={"col-form-label d-flex bd-highlight "  + (errorFeaturesIndexes.length ? "text-danger" : "text-dark")}>
+                <div className="p-2 w-100 bd-highlight">Features</div>
+                <div className="p-2 flex-shrink-1 bd-highlight"><ContentPopover popover={popover} /></div>
+            </div>
+            <ul className="list-group">
             {Array.from(Array(featuresMaxLimit).keys()).map(function (n, index) {
                 return <input type="text" className={"form-control mb-3 " + (errorFeaturesIndexes.indexOf(index) != -1 ? "is-invalid" : "")} key={"input_feature_" + index}
                               defaultValue={features[index] !== void 0 ? features[index] : ""}
                               onChange={event => setFeaturesValue(editFeatures(features, index, event.target.value, setErrorFeaturesIndexes))} /> })}
-            <span className={"form-text " + (errorFeaturesIndexes.length ? "invalid-feedback" : "")}>Feature limit: {featuresLengthLimit} characters</span>
+            </ul>
+            <span className={"form-text " + (errorFeaturesIndexes.length ? "text-danger" : "")}>Feature limit: {featuresLengthLimit} characters</span>
         </div>
     }
     return features.map((feature, index) => {
-        return <li className="list-group-item" key={index}>{feature}</li>
+        return <li style={{"wordWrap":"break-word"}} className="list-group-item" key={index}>{feature}</li>
     })
 }
 
@@ -55,7 +77,7 @@ function editFeatures(features, index, value, setErrorFeaturesIndexes) {
 
 function renderEditButton(edit, activateEditMode, deActivateEditMode) {
     if (edit) {
-        return <button type="button" className="btn btn-success col-12" onClick={() => deActivateEditMode()}>Save</button>
+        return <button type="button" className="btn btn-outline-dark col-12" onClick={() => deActivateEditMode()}>Save</button>
     }
     return <button type="button" className="btn btn-outline-dark col-12" onClick={() => activateEditMode()}>Edit</button>
 }
@@ -68,6 +90,7 @@ function UserProfile({user, setUser}) {
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
     const [errorFeaturesIndexes, setErrorFeaturesIndexes] = useState([]);
+    const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     function renderMessage() {
         if (errorMessage !== "") {
             return <div className="alert alert-danger alert-dismissible fade show col-12" role="alert">
@@ -93,10 +116,10 @@ function UserProfile({user, setUser}) {
         <div className="container-fluid p-3 bg-light border">
             {renderMessage("pizdec", "")}
             <div className="row m-0">
-                <div className="col-md-3 p-3">
+                <div className="col-md-3 p-3 text-center">
                         <img
                             style={{"height":"auto"}}
-                            className="img-thumbnail rounded"
+                            className="img-thumbnail rounded mx-auto d-block"
                             src={"data:image/png;base64," + photoValue}
                             alt="Logo"
                         />
@@ -106,20 +129,18 @@ function UserProfile({user, setUser}) {
                     <div className="mb-3 mb-md-0 p-0">
                         { renderUserName(edit, nameValue, setNameValue) }
                     </div>
-                    <div className="">
-                        <ul className="list-group">
-                            { renderUserFeature(edit, featuresValue, setFeaturesValue, errorFeaturesIndexes, setErrorFeaturesIndexes) }
-                        </ul>
+                    <div className="mb-3 mb-md-0 p-0">
+                        { renderUserFeature(edit, featuresValue, setFeaturesValue, errorFeaturesIndexes, setErrorFeaturesIndexes, isPopoverOpen, setIsPopoverOpen) }
                     </div>
                     <div className="container-fluid p-0 pt-3 col-12">
                         <div className="row m-0">
-                            <div className="col-md-4 p-0 pe-md-1">
+                            <div className="col-md-4 p-0 pe-md-1 mb-3">
                                 { renderEditButton(edit, activateEditMode, deActivateEditMode)}
                             </div>
-                            <div className="col-md-4 p-0 ps-md-1">
+                            <div className="col-md-4 p-0 ps-md-1 mb-3">
                                 <button type="button" className="btn btn-outline-dark col-12">Add</button>
                             </div>
-                            <div className="col-md-4 p-0 ps-md-1">
+                            <div className="col-md-4 p-0 ps-md-1 mb-3">
                                 <button type="button" className="btn btn-outline-danger col-12" onClick={submitSignOutRequest}>Sign Out</button>
                             </div>
                         </div>
