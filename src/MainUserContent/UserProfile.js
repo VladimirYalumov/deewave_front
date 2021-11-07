@@ -77,9 +77,9 @@ function editFeatures(features, index, value, setErrorFeaturesIndexes) {
 
 function renderEditButton(edit, activateEditMode, deActivateEditMode) {
     if (edit) {
-        return <button type="button" className="btn btn-outline-dark col-12" onClick={() => deActivateEditMode()}>Save</button>
+        return <label type="button" className="btn btn-outline-dark col-12" onClick={() => deActivateEditMode()}>Save</label>
     }
-    return <button type="button" className="btn btn-outline-dark col-12" onClick={() => activateEditMode()}>Edit</button>
+    return <label type="button" className="btn btn-outline-dark col-12" onClick={() => activateEditMode()}>Edit</label>
 }
 
 function UserProfile({user, setUser}) {
@@ -138,10 +138,10 @@ function UserProfile({user, setUser}) {
                                 { renderEditButton(edit, activateEditMode, deActivateEditMode)}
                             </div>
                             <div className="col-md-4 p-0 ps-md-1 mb-3">
-                                <button type="button" className="btn btn-outline-dark col-12">Add</button>
+                                <label type="button" className="btn btn-outline-dark col-12">Add</label>
                             </div>
                             <div className="col-md-4 p-0 ps-md-1 mb-3">
-                                <button type="button" className="btn btn-outline-danger col-12" onClick={submitSignOutRequest}>Sign Out</button>
+                                <label type="button" className="btn btn-outline-danger col-12" onClick={submitSignOutRequest}>Sign Out</label>
                             </div>
                         </div>
                     </div>
@@ -153,7 +153,7 @@ function UserProfile({user, setUser}) {
                         <option value="1">People</option>
                     </select>
                     <div className="col-12 mt-3">
-                        <button type="button" className="btn btn-dark col-12">Search </button>
+                        <label type="button" className="btn btn-dark col-12">Search </label>
                     </div>
                 </div>
             </div>

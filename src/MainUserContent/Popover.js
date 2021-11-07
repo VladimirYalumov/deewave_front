@@ -5,7 +5,7 @@ import React from "react";
 
 function Example({popover}) {
     return <OverlayTrigger trigger="click" placement="left" overlay={popover}>
-        <button type="button" className="btn-circle btn btn-sm btn-dark fw-bold text-white">?</button>
+        <label type="button" className="btn-circle btn btn-sm btn-outline-dark fw-bold">?</label>
     </OverlayTrigger>
 }
 
