@@ -7,9 +7,14 @@ import ContentPopover from './Popover';
 import DefaultImage from "../Globals/DefaultImage";
 import Host from './../Globals/Host';
 import Popover from "react-bootstrap/Popover";
+import SearchSettings from "./SearchSettings";
 
 const featuresMaxLimit = 4;
 const featuresLengthLimit = 35;
+
+const searchMethodTypes = {
+    userByName: 1
+}
 
 function renderUserName(edit, name, setNameValue) {
     if (edit) {
@@ -77,20 +82,22 @@ function editFeatures(features, index, value, setErrorFeaturesIndexes) {
 
 function renderEditButton(edit, activateEditMode, deActivateEditMode) {
     if (edit) {
-        return <label type="button" className="btn btn-outline-dark col-12" onClick={() => deActivateEditMode()}>Save</label>
+        return <label type="button" className="btn btn-outline-light col-12" onClick={() => deActivateEditMode()}>Save</label>
     }
-    return <label type="button" className="btn btn-outline-dark col-12" onClick={() => activateEditMode()}>Edit</label>
+    return <label type="button" className="btn btn-outline-light col-12" onClick={() => activateEditMode()}>Edit Profile</label>
 }
 
-function UserProfile({user, setUser}) {
+function UserProfile({user, setUser, searchDataContent, searchDataType}) {
     const [edit, setEdit] = useState(false);
     const [nameValue, setNameValue] = useState(user.name);
     const [featuresValue, setFeaturesValue] = useState(user.features);
     const [photoValue, setPhotoValue] = useState(user.photo !== "" ? user.photo : DefaultImage);
     const [errorMessage, setErrorMessage] = useState("");
-    const [successMessage, setSuccessMessage] = useState("");
     const [errorFeaturesIndexes, setErrorFeaturesIndexes] = useState([]);
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+    const [searchMethod, setSearchMethod] = useState(searchMethodTypes.userByName);
+    const [searchValue, setSearchValue] = useState("");
+
     function renderMessage() {
         if (errorMessage !== "") {
             return <div className="alert alert-danger alert-dismissible fade show col-12" role="alert">
@@ -113,8 +120,21 @@ function UserProfile({user, setUser}) {
         setEdit(false);
     };
     return (
-        <div className="container-fluid p-3 bg-light border">
-            {renderMessage("pizdec", "")}
+        <div className="container-fluid bg-light p-0 pb-3 rounded">
+            <div className="container-fluid p-3 pb-0 col-12" style={{backgroundColor: "#262624"}}>
+                <div className="row m-0">
+                    <div className="col-md-2 p-0 pe-md-1 mb-3">
+                        { renderEditButton(edit, activateEditMode, deActivateEditMode)}
+                    </div>
+                    <div className="col-md-2 p-0 ps-md-1 mb-3">
+                        <label type="button" className="btn btn-outline-light col-12">Add Event</label>
+                    </div>
+                    <div className="col-md-2 p-0 ps-md-1 mb-3 ms-auto">
+                        <label type="button" className="btn btn-outline-danger col-12" onClick={submitSignOutRequest}>Sign Out</label>
+                    </div>
+                </div>
+            </div>
+            {renderMessage()}
             <div className="row m-0">
                 <div className="col-md-3 p-3 text-center">
                         <img
@@ -132,33 +152,31 @@ function UserProfile({user, setUser}) {
                     <div className="mb-3 mb-md-0 p-0">
                         { renderUserFeature(edit, featuresValue, setFeaturesValue, errorFeaturesIndexes, setErrorFeaturesIndexes, isPopoverOpen, setIsPopoverOpen) }
                     </div>
-                    <div className="container-fluid p-0 pt-3 col-12">
-                        <div className="row m-0">
-                            <div className="col-md-4 p-0 pe-md-1 mb-3">
-                                { renderEditButton(edit, activateEditMode, deActivateEditMode)}
-                            </div>
-                            <div className="col-md-4 p-0 ps-md-1 mb-3">
-                                <label type="button" className="btn btn-outline-dark col-12">Add</label>
-                            </div>
-                            <div className="col-md-4 p-0 ps-md-1 mb-3">
-                                <label type="button" className="btn btn-outline-danger col-12" onClick={submitSignOutRequest}>Sign Out</label>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-                <div className="col-md-4 d-flex flex-column pt-3 text-dark">
+                <div className="col-md-4 d-flex flex-column mt-3 text-dark border-start">
                     <label htmlFor="searchSelect" className="col-form-label">Search:</label>
-                    <select defaultValue={'0'} className="form-select">
+                    <select defaultValue={'1'} className="form-select" onChange={e => setSearchMethod(Number(e.target.value)) }>
                         <option value="0">Events</option>
                         <option value="1">People</option>
                     </select>
+                    <SearchSettings searchMethod={searchMethod} searchMethodTypes={searchMethodTypes} setSearchValue={setSearchValue} />
                     <div className="col-12 mt-3">
-                        <label type="button" className="btn btn-dark col-12">Search </label>
+                        <label type="button" className="btn btn-dark col-12" onClick={searchDataStart}>Search</label>
                     </div>
                 </div>
             </div>
         </div>
     );
+
+    function searchDataStart() {
+        searchDataContent("");
+        setTimeout(updateSearcData, 100);
+    }
+
+    function updateSearcData() {
+        searchDataContent(searchValue);
+        searchDataType(searchMethod);
+    }
 
     function submitSignOutRequest() {
         const cookies = new Cookies();

@@ -4,16 +4,24 @@ import Cookies from "universal-cookie";
 import PropTypes from "prop-types";
 
 import Host from './../Globals/Host';
+import SearchUser from "../Content/SearchUser";
+
+function renderSearchData(searchDataType, content) {
+    switch (searchDataType) {
+        case 0:
+            return "";
+        case 1:
+            return <SearchUser searchDataContent={content} />
+        default:
+            return "";
+    }
+}
 
 function MainUser({setAuth}) {
-    const [user, setUser] = useState(
-        {
-            name: "",
-            features: [],
-            photo: ""
-        }
-    );
-    var isGetUser = false;
+    const [user, setUser] = useState({name: "", features: [], photo: ""});
+    const [searchDataContent, setSearchDataContent] = useState("");
+    const [searchDataType, setSearchDataType] = useState(0);
+    let isGetUser = false;
     useEffect(() => {
         const cookies = new Cookies();
         if (typeof cookies.get('userId') !== 'undefined' || typeof cookies.get('authToken') !== 'undefined') {
@@ -52,11 +60,14 @@ function MainUser({setAuth}) {
             isGetUser = true;
             setAuth(false)
         });
-    }, [])
+    }, []);
 
     if (user.name !== "") {
         return (
-            <UserProfile user={user} setUser={setUser} />
+            <div>
+                <UserProfile user={user} setUser={setUser} searchDataContent={setSearchDataContent} searchDataType={setSearchDataType} />
+                {searchDataContent !== "" ? renderSearchData(searchDataType, searchDataContent) : ""}
+            </div>
         );
     } else {
         if (isGetUser) {
